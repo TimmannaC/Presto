@@ -1,0 +1,90 @@
+The object of this blog is to demonstrate the power of Presto(Distrubuted SQL engine). 
+Presto is an general purpose Distributed SQL engine which can be used to make an interactive queries on Datalake sources like (HDFS/S3/Azure Blob). 
+
+What is Presto ?
+- Open source distributed SQL query engine
+- Originally developed by Facebook
+- ANSI SQL Compliant
+- Like Hive, it’s not a database
+- No Vendor lock-In 
+    - No Hadoop distribution vendor lock-in
+    - No Storage engine vendor lock-in
+    - No Cloud Vendor lock-in
+
+- Presto also separates storage & computation
+    - Scale storage & computation independently
+
+
+How presto differs from Hive & Impala.
+- Performance & Scale
+- Cross Platform query capability, not only SQL on Hadoop
+- Support federated queries
+
+
+Presto offers a wide variety of built-in functions like 
+    - regular expression functions
+        eg : select regexp_extract_all('1a 2b 14m','\d+'); // (1,2,14)
+    - lambda expression and functions
+        eg : select filter(ARRAY [5,-6, NULL, 7], x -> x > 4);// (5,7)
+    - Presto even supports complex data types as well
+        - JSON
+        - ARRAY
+        - MAP
+        - ROW/STRUCT
+
+
+Presto concepts.
+- Server Types
+There are two types of Presto servers
+ - coordinators
+    - The Presto coordinator is the server that is responsible for parsing statements, planning queries, and managing Presto worker nodes. 
+    - It is the “brain” of a Presto installation and is also the node to which a client connects to submit statements for execution. 
+    - Every Presto installation must have a Presto coordinator alongside one or more Presto workers.
+
+ - workers
+    - A Presto worker is a server in a Presto installation which is responsible for executing tasks and processing data. 
+    - Worker nodes fetch data from connectors and exchange intermediate data with each other. The coordinator is responsible for fetching 
+      results from the workers and returning the final results to the client.
+
+- Data Source related.
+ - Connector
+    - To have an interaction between presto and the data sources we use these connector jars.
+ 
+ - catalog
+    - These are a simple configuration files to connect to any of the data sources. We should provide some basic configurations like connector-name,
+      host-name,username,password,database-name,table-name.
+
+ - Schema
+    - Schemas are a way to organize tables. Together, a catalog and schema define a set of tables that can be queried
+    - While making an query to hive or other databases which dont have a concept of schema translates to the same concept in the target database.
+    - Other types of connectors may choose to organize tables into schemas in a way that makes sense for the underlying data source.
+
+- Query execution model.
+    - Presto executes SQL statements and turns these statements into queries that are executed across a distributed cluster of coordinator and workers.
+
+- Query
+    - When Presto parses a statement, it converts it into a query and creates a distributed query plan which is then realized as a series of 
+      interconnected stages running on Presto workers. When you retrieve information about a query in Presto, you receive a snapshot of every
+      component that is involved in producing a result set in response to a statement.
+
+    - The difference between a statement and a query is simple. A statement can be thought of as the SQL text that is passed to Presto, 
+      while a query refers to the configuration and components instantiated to execute that statement. A query encompasses stages, tasks,
+      splits, connectors, and other components and data sources working in concert to produce a result.
+
+- Stage
+    - When Presto executes a query, it does so by breaking up the execution into a hierarchy of stages.
+    - Every query has a root stage which is responsible for aggregating the output from other stages.
+    - Stages are what the coordinator uses to model a distributed query plan, but stages themselves don’t run on Presto workers.
+
+- Task
+    - a stage is implemented as a series of tasks distributed over a network of Presto workers.
+
+- Split
+    - section of large dataset is called as split.
+    - task operate on splits.
+    - Stages at the lowest level of a distributed query plan retrieve data via splits from connectors, and intermediate stages at a higher level of a distributed query plan retrieve data from other stages.
+    - When Presto is scheduling a query, the coordinator will query a connector for a list of all splits that are available for a table.
+    - The coordinator keeps track of which machines are running which tasks and what splits are being processed by which tasks.
+
+- Exchange
+    - Exchanges transfer data between Presto nodes for different stages of a query. Tasks produce data into an output buffer and consume data from other tasks using an exchange client.

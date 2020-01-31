@@ -1,0 +1,47 @@
+1) Save the docker images to local system.
+    docker save -o <path for generated tar file> <image name>
+    docker save -o "D:\docker-images" "starburstdata/presto"
+    docker save "starburstdata/presto" >  presto.tar // will persist the image.
+    docker load < presto.tar // to load the image.
+
+    docker export "starburstdata/presto" > presto.tar  starburstdata/presto:latest // will persist the container.
+    docker import -m "presto" presto.tar // import the image.
+    docker run -p 8080:8080 -itd image-id /bin/bash // run the image as container.
+
+    docker import -m "mongo" mongo.tar // import the image.
+    docker run -p 27017:27017 -itd image-id /bin/bash // run the image as container.
+
+    docker import -m "mysql" mysql.tar // import the image.
+    docker run -p 3306:3306 -itd image-id /bin/bash // run the image as container.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// sample data.
+https://dev.mysql.com/doc/employee/en/employees-introduction.html
+
+
+// creating an compose file.
+//validate the compose file.
+$> docker-compose config
+// to run the compose file.
+$> docker-compose up -d
+// Bring down application by command
+$> docker-compose down
+
+// How to scale services
+$> docker-compose up -d --scale database=4

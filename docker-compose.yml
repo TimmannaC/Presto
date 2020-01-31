@@ -1,0 +1,24 @@
+version: "3.1"
+
+services:
+  
+  database_Engine:
+    image: starburstdata/presto
+    ports:
+     - "8080:8080"
+  
+  database:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+    ports:
+      - "3306:3306"
+
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
